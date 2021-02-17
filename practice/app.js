@@ -1,4 +1,3 @@
-
 // Get data from some source
 const DUMMY_DATA = [
 {id: 'd1', val: 10, reg: 'USA'},
@@ -8,40 +7,76 @@ const DUMMY_DATA = [
 
 // example bar chart
 
-
+// for scaling the bars
+// they give information about x and y axes
+// values where the data should be positioned
+const xScale = d3.scaleBand()
+    .domain(DUMMY_DATA.map(dataPoint =>dataPoint.reg))
+    .rangeRound([0, 250])
+    .padding(0.3);
+const yScale = d3.scaleLinear().domain([0, 35]).range([750, 0]);
+ 
+//svg uses coordinate systems / moving from css
 // save this variable so that we can use this later on
-const container = d3.select('div')
+const container = d3.select('svg').append("g")
     // takes two elements
-    .classed('container', true)    
+    .classed('container', true);    
     // for specifying the inline style of dom elemets (dor css is it classed)    
-    .style('border', '5px solid blue');
+    // moved this to index.js
+    // .style('border', '5px solid blue');
 
 // to add some elements
-const bars = container
+ bars = container
     // .div will include container as well. so use .bar
     .selectAll('.bar')
     .data(DUMMY_DATA)
     .enter()
     // for every missing element
-    .append('div')
+    .append('rect')
     .classed('bar', true)
-    .style('width', '50px')
-    .style('height', data => (data.val * 15) + 'px');
+    .attr('width', xScale.bandwidth())
+    .attr('height', (data) => 750 - yScale(data.val))
+    .attr('x', data => xScale(data.reg))
+    .attr('y', data => yScale(data.val));
 
 
 
+function xAxis()
 
-// Hello world example
-// to select class- .some-class , with id - #some-id 
-// d3.select('div')
-//     //select everything inside the div
-//     // select all paragraph elements
-//     .selectAll('p')
-//     //to bind the selection with the data (can do in advance without data)
-//     .data([1,2,3])
-//     // tell which paragraphs are missing
+
+// bars.selectAll("text")
+//     .data(DUMMY_DATA)
 //     .enter()
-//     // add missing paragraphs to the data
-//     .append('p')
-//     // add a text node inside of the paragraph element
-//     .text(data => data);
+//     .append("text")
+    
+//     .text((data) => data.reg)
+//     .attr("x", data => {return xScale(data.reg);
+//     })
+
+//     .attr("y", (data) => 750 - yScale(data.val) + 14)
+
+//     .attr("font-family" , "sans-serif")
+
+//     .attr("font-size" , "11px")
+
+//     .attr("fill" , "white")
+
+//    .attr("text-anchor", "middle");
+
+// bars.append("text")
+//         .text((DUMMY_DATA) => DUMMY_DATA.reg)
+//         .attr("x", (data)=> {console.logxScale(data.reg) +15})
+//         .attr("y", (data)=> yScale(data.val) - 5)
+//         .attr("font-family" , "sans-serif")
+//         .attr("font-size" , "14px")
+//         .attr("fill" , "black")
+//         .attr("text-anchor", "middle");
+
+    //exit is opposite of enter, it tells which elements is too much and 
+    // have to be removed
+    // setTimeout(() =>{
+    //     bars.data(DUMMY_DATA.slice(0,2)).exit().remove();
+    // }, 2000)
+    // setTimeout(() =>{
+    //     bars.data(DUMMY_DATA.slice(0,2)).exit().remove();
+    // }, 2000)
