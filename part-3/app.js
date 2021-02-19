@@ -90,6 +90,9 @@ svg.append("g")
 var div = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
+ 
+ ///////define tooltip for mouse hovering
+ 
  //points
  svg.selectAll("circle")
     .data(data).enter().append("circle")
@@ -100,32 +103,37 @@ var div = d3.select("body").append("div")
     .attr("r", radius)
     .attr("fill", "#081d58")
     .attr("fill-opacity", 0.4)
-    .on('mouseover', function (d, i) {
+    .on('mouseover', function (i, d) {
       d3.select(this).transition()
           .duration('100')
           .attr("r", radiusZoom);
-      div.transition()
-          .duration(100)
-          .style("opacity", 1);
+      var xCoord = d3.mouse(this)[0] + 20;
+      var yCoord = d3.mouse(this)[0] - 10;
+      console.log(xCoord);
+      console.log(yCoord);
+
+      // div.transition()
+      //     .duration(100)
+      //     .style("opacity", 1);
           
-      div.html("$" + d3.format(".2f")(i.Model))
-          .style("left", (d3.event.pageX + 10) + "px")
-          .style("top", (d3.event.pageY - 15) + "px");
+      // div.html("$" + d3.format(".2f")(d.Model))
+      //     .style("left", (d3.event.pageX + 10) + "px")
+      //     .style("top", (d3.event.pageY - 15) + "px");
   })
   .on('mouseout', function (d, i) {
       d3.select(this).transition()
-          .duration('200')
+          .duration('300')
           .attr("r", radius);
-      div.transition()
-          .duration('200')
-          .style("opacity", 0);
+      // div.transition()
+      //     .duration('300')
+      //     .style("opacity", 0);
   });
 
 
 
 
     console.log(data.filter((d,i)=>{return d.Model=="bmw 2002"}));
-svg.selectAll("circlebmw")
+    svg.selectAll("circlebmw")
     .data(data.filter((d,i)=>{return d.Model=="bmw 2002"}))
     .enter().append("circle")
     .attr("cx", function(d){return(x(d.pca1));})
@@ -152,21 +160,21 @@ svg.selectAll("circlebmw")
     .style('fill', 'blue')  
     .text("Principal Component Analysis");  
 
-    svg.append("g")
-    .attr("fill", "none")
-    .attr("pointer-events", "all")
-  .selectAll("rect")
-  .data(d3.pairs(data))
-  .join("rect")
-    .attr("x", ([a, b]) => x(a.date))
-    .attr("height", height)
-    .attr("width", ([a, b]) => x(b.date) - x(a.date))
-    .on("mouseover", (event, [a]) => tooltip.show(a))
-    .on("mouseout", () => tooltip.hide());
+  //   svg.append("g")
+  //   .attr("fill", "none")
+  //   .attr("pointer-events", "all")
+  // .selectAll("rect")
+  // .data(d3.pairs(data))
+  // .join("rect")
+  //   .attr("x", ([a, b]) => x(a.date))
+  //   .attr("height", height)
+  //   .attr("width", ([a, b]) => x(b.date) - x(a.date))
+  //   .on("mouseover", (event, [a]) => tooltip.show(a))
+  //   .on("mouseout", () => tooltip.hide());
 
-svg.append(() => tooltip.node);
+// svg.append(() => tooltip.node);
 
-return svg.node();
+// return svg.node();
 
 
   
