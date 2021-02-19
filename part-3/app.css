@@ -1,0 +1,79 @@
+
+
+#DisplayStats{
+  width: 600px;
+height: 100px;
+border: 1px solid red;
+}
+
+#PCAscatter{
+  width: 600px;
+height: 500px;
+  float:left; /* add this */
+  border: 1px solid red;
+}
+
+
+#Acceleration{
+  width: 300px;
+height: 300px;
+  float:left; /* add this */
+  border: 1px solid red;
+}
+#MPG {
+  height: 300px;
+width: 300px;
+  border: 1px solid green;
+  float: left; /* add this */
+/* clear: left; */
+}
+#Cylinders {
+  height: 300px;
+width: 300px;
+  border: 1px solid green;
+  float: left; /* add this */
+/* clear: left; */
+}#Displacement {
+  height: 300px;
+width: 300px;
+  border: 1px solid green;
+  float: left; /* add this */
+/* clear: left; */
+}#Year {
+  height: 300px;
+width: 300px;
+  border: 1px solid green;
+  float: left; /* add this */
+/* clear: left; */
+}#Horsepower {
+  height: 300px;
+width: 300px;
+  border: 1px solid green;
+  float: left; /* add this */
+/* clear: left; */
+}#Weight {
+  height: 300px;
+width: 300px;
+  border: 1px solid green;
+  float: left; /* add this */
+/* clear: left; */
+}
+
+
+
+
+
+body {
+    margin: 10px;
+    overflow: hidden;
+    /* background-color: black;
+    color: blanchedalmond; */
+}
+  
+  rect {
+    fill: rgb(177, 174, 16);
+  }
+/* 
+  circle{
+    opacity: 0.2;
+  } */
