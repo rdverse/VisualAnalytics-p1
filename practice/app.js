@@ -41,7 +41,7 @@ const container = d3.select('svg').append("g")
 
 
 
-function xAxis()
+// function xAxis()
 
 
 // bars.selectAll("text")
