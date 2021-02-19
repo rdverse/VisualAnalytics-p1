@@ -1,7 +1,7 @@
 
 
 function update(){
-  carname = svg.select("#carname");
+  carname = svg.select("#DisplayStats");
     
   circles.enter()
       .append("circle")
@@ -48,9 +48,11 @@ function update(){
 // chart rendering algorithm
 const renderScatterChart = (data) => {
   var margin = {top: 20, right: 30, bottom: 60, left: 40},
-  width = 400 - margin.left - margin.right,
-  height = 400 - margin.top - margin.bottom,
-  radius = 5;
+  width = 500 - margin.left - margin.right,
+  height = 500 - margin.top - margin.bottom,
+  radius = 3, 
+  radiusZoom =12;
+
 
 var svg = d3.select("#PCAscatter")
   .append("svg")
@@ -85,7 +87,9 @@ var y = d3.scaleLinear()
 svg.append("g")
   .call(d3.axisLeft(y));
 ///////////////////////
-
+var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
  //points
  svg.selectAll("circle")
     .data(data).enter().append("circle")
@@ -94,8 +98,31 @@ svg.append("g")
     .attr("cy", function(d) { return(y(d.pca2));})
     // .attr("width", function(d) { return x(d[divname]);})
     .attr("r", radius)
-    .attr("fill", "#69b3a2")
-    .attr("fill-opacity", 0.4);
+    .attr("fill", "#081d58")
+    .attr("fill-opacity", 0.4)
+    .on('mouseover', function (d, i) {
+      d3.select(this).transition()
+          .duration('100')
+          .attr("r", radiusZoom);
+      div.transition()
+          .duration(100)
+          .style("opacity", 1);
+          
+      div.html("$" + d3.format(".2f")(i.Model))
+          .style("left", (d3.event.pageX + 10) + "px")
+          .style("top", (d3.event.pageY - 15) + "px");
+  })
+  .on('mouseout', function (d, i) {
+      d3.select(this).transition()
+          .duration('200')
+          .attr("r", radius);
+      div.transition()
+          .duration('200')
+          .style("opacity", 0);
+  });
+
+
+
 
     console.log(data.filter((d,i)=>{return d.Model=="bmw 2002"}));
 svg.selectAll("circlebmw")
@@ -111,9 +138,9 @@ svg.selectAll("circlebmw")
 
     // var circles = svg.selectAll(".dot")
     // .data(data);
-    d3.selectAll('select').on('change', function() {
-      update();
-  });
+  //   d3.selectAll('select').on('change', function() {
+  //     update();
+  // });
 
 
   svg.append("text")
@@ -124,7 +151,30 @@ svg.selectAll("circlebmw")
     .style("text-decoration", "underline")
     .style('fill', 'blue')  
     .text("Principal Component Analysis");  
-    };
+
+    svg.append("g")
+    .attr("fill", "none")
+    .attr("pointer-events", "all")
+  .selectAll("rect")
+  .data(d3.pairs(data))
+  .join("rect")
+    .attr("x", ([a, b]) => x(a.date))
+    .attr("height", height)
+    .attr("width", ([a, b]) => x(b.date) - x(a.date))
+    .on("mouseover", (event, [a]) => tooltip.show(a))
+    .on("mouseout", () => tooltip.hide());
+
+svg.append(() => tooltip.node);
+
+return svg.node();
+
+
+  
+  
+  
+  
+  
+  };
 
 
 
@@ -240,7 +290,7 @@ renderBarChart(AllData.filter((d,i)=>{return i<8}),"Displacement");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"Horsepower");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"Weight");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"Year");
-update();
+// update();
 });
 
 

@@ -51,12 +51,18 @@ def make_data(fileName):
 
 # @Arguments: features data
 # @PCA components
-def pca_model(features):
+def pca_model(features, origin=True, jitter=True):
     # pca = pca(n_components=2)
     # scale = MinMaxScaler()
     pipe = make_pipeline(MinMaxScaler(), PCA(n_components=2))
-    pca_components = pipe.fit_transform(features[:, [0, 1, 2, 3, 4, 5, 6]])
-    return (pca_components)
+    if origin:
+        pca_components = pipe.fit_transform(
+            features[:, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]])
+    else:
+        pca_components = pipe.fit_transform(features[:, [0, 1, 2, 3, 4, 5, 6]])
+
+    pca1, pca2 = jitter_values(pca_components, jitter)
+    return (pca1, pca2)
 
 
 # @Argument:s pca data
@@ -71,22 +77,37 @@ def plot_data(dfData):
 
     plt.title('Visualizing pca components in a scatter plot')
     plt.legend()
-    plt.savefig("pca_noOrigin.jpg")
+    plt.savefig("pca_Jitter.jpg")
     plt.show()
 
 
 # @Arguments: dfData, pca_componets
 # @PCA components
-def append_data(dfData, pca_components):
-    dfData['pca1'] = np.take(pca_components, 0, axis=1)
-    dfData['pca2'] = np.take(pca_components, 1, axis=1)
+def append_data(dfData, pcaa, pca2):
+    dfData['pca1'] = pca1
+    dfData['pca2'] = pca2
     plot_data(dfData)
-    dfData.to_csv('../../Data/pca_cars_noOrigin.csv')
+    dfData.to_csv('../../Data/pca_cars_Jitter.csv')
     return (dfData)
+
+
+# @Arguments: pca_components array (size [nx2]), jitter (True by default)
+# @Returns: pca1, pca2 values with or without jitter
+def jitter_values(pca_components, jitter):
+    pca1 = np.take(pca_components, 0, axis=1)
+    pca2 = np.take(pca_components, 1, axis=1)
+
+    if jitter:
+        pca1 = pca1 + np.random.uniform(-0.15, 0.15, len(pca1))
+        pca2 = pca2 + np.random.uniform(-0.25, 0.25, len(pca2))
+    return pca1, pca2
 
 
 if __name__ == "__main__":
     fileName = "../../Data/cars.csv"
     dfData, features = make_data(fileName)
-    pca_components = pca_model(features)
-    final_data = append_data(dfData, pca_components)
+
+    # Jitter is applied only after pca components are derived.
+    pca1, pca2 = pca_model(features, origin=True, jitter=True)
+    # Storing data and plotting scatter
+    final_data = append_data(dfData, pca1, pca2)
