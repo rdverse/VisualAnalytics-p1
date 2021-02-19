@@ -1,18 +1,143 @@
 
-// const width = 1000;
-// const height = 600;
 
-// const width = +svg.attr('width');
-// const height = +svg.attr('height');
+function update(){
+  carname = svg.select("#carname");
+    
+  circles.enter()
+      .append("circle")
+      .attr("class", "dot");
+  
+  circles.exit().remove();
+  
+  // "update" mode
+  circles.attr("cx", function(d) {
+          return x(d.pca1);
+      })
+      .attr("cy", function(d) {
+          return y(d.pca2);
+      })
+      .style("fill", function(d) {
+          return color(d.Origin);
+      })
+      .attr("r", 5);
+  
+  circles.on("mouseover", function(d) {
+          d3.select(this)
+              .transition()
+              .duration(10)
+              .attr("r", 8);
+          carname.text("Name of selected car: " + d.Model);
+      })
+      .on("mouseout", function() {
+          d3.select(this)
+              .transition()
+              .duration(10)
+              .attr("r", 5);
+          carname.text("Name of selected car: ____");
+  
+      })
+
+}
+
+
+
 
 ///////////////////////////////////////////////////////////////
-/////////////Chart Renderer///////////////////////////////////
+/////////////Scatter Chart Renderer///////////////////////////////////
+/////////////////////////////////////////////////////////////
+// chart rendering algorithm
+const renderScatterChart = (data) => {
+  var margin = {top: 20, right: 30, bottom: 60, left: 40},
+  width = 400 - margin.left - margin.right,
+  height = 400 - margin.top - margin.bottom,
+  radius = 5;
+
+var svg = d3.select("#PCAscatter")
+  .append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
+  
+///////////////////////////////
+
+  // Add X axis
+  var x = d3.scaleLinear()
+  .domain([d3.min(data, d=>d.pca1), d3.max(data, d=>d.pca1)])
+  .range([0,width]);
+
+  // console.log(x);
+  
+svg.append("g")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x))
+  .selectAll("text")
+  //translate does not work for some reason, [check later]
+    .attr("transform", "translate(-10,0)rotate(-45)")
+    .style("text-anchor", "end");
+
+// Y axis
+var y = d3.scaleLinear()
+  .range([ 0, height])
+  .domain([d3.min(data, d=>d.pca1), d3.max(data, d=>d.pca1)]);
+  
+svg.append("g")
+  .call(d3.axisLeft(y));
+///////////////////////
+
+ //points
+ svg.selectAll("circle")
+    .data(data).enter().append("circle")
+    // a
+    .attr("cx", function(d){return(x(d.pca1));})
+    .attr("cy", function(d) { return(y(d.pca2));})
+    // .attr("width", function(d) { return x(d[divname]);})
+    .attr("r", radius)
+    .attr("fill", "#69b3a2")
+    .attr("fill-opacity", 0.4);
+
+    console.log(data.filter((d,i)=>{return d.Model=="bmw 2002"}));
+svg.selectAll("circlebmw")
+    .data(data.filter((d,i)=>{return d.Model=="bmw 2002"}))
+    .enter().append("circle")
+    .attr("cx", function(d){return(x(d.pca1));})
+    .attr("cy", function(d) { return(y(d.pca2));})
+    // .attr("width", function(d) { return x(d[divname]);})
+    .attr("r", radius)
+    .attr("fill", "red")
+    .attr("fill-opacity", 1.0);
+    
+
+    // var circles = svg.selectAll(".dot")
+    // .data(data);
+    d3.selectAll('select').on('change', function() {
+      update();
+  });
+
+
+  svg.append("text")
+    .attr("x", (width / 2))             
+    .attr("y", (height+(16*3)))
+    .attr("text-anchor", "middle")  
+    .style("font-size", "16px") 
+    .style("text-decoration", "underline")
+    .style('fill', 'blue')  
+    .text("Principal Component Analysis");  
+    };
+
+
+
+
+
+///////////////////////////////////////////////////////////////
+/////////////Bar chart Renderer///////////////////////////////////
 /////////////////////////////////////////////////////////////
 // chart rendering algorithm
 const renderBarChart = (data, divname) => {
   var margin = {top: 20, right: 30, bottom: 60, left: 120},
-  width = 400 - margin.left - margin.right,
-  height = 400 - margin.top - margin.bottom;
+  width = 300 - margin.left - margin.right,
+  height = 300 - margin.top - margin.bottom;
 
 var svg = d3.select("#" + divname)
   .append("svg")
@@ -47,8 +172,7 @@ var y = d3.scaleBand()
   
 svg.append("g")
   .call(d3.axisLeft(y));
-  console.log(divname);  
-  console.log(data);
+
 
 //     d3.select('select')
 //     .on("change", function() {
@@ -75,21 +199,12 @@ svg.append("g")
     .style("font-size", "16px") 
     .style("text-decoration", "underline")
     .style('fill', 'blue')  
-    .text(divname);
-        // .text(divname);
-
-        // .style("text-anchor", "middle")
-        // .style('fill', 'darkOrange')
-        // .style('font-size', '20px')
-        // .attr('width', d => xScale(xValue(d)))
-        // .attr('heigth', yScale.bandwidth());
-    
+    .text(divname);  
     };
 
 
-
-const url ="https://raw.githubusercontent.com/ReDevVerse/carsData/main/cars.csv"
- 
+//const url ="https://raw.githubusercontent.com/ReDevVerse/carsData/main/cars.csv"
+const url = "https://raw.githubusercontent.com/ReDevVerse/carsData/main/pca_cars_noOrigin.csv";
 // function to fetch the data from the github repo
 const fetchText = async(url) => {
     const response = await fetch(url);
@@ -105,7 +220,8 @@ AllData.forEach(element => {
     element.Displacement = +element.Displacement;
     element.Horsepower = +element.Horsepower;
     element.MPG = +element.MPG;
-    element.Origin = +element.Origin;
+    element.pca1 = +element.pca1;
+    element.pca2 = +element.pca2;
     element.Weight = +element.Weight;
     element.Year = +element.Year;
 });
@@ -116,7 +232,7 @@ const DUMMY_DATA = [
     {id: 'd2', val: 30, reg: 'Canada'},
     {id: 'd3', val: 20, reg: 'India'},
     {id: 'd4', val: 11, reg: 'China'}];
-
+renderScatterChart(AllData);
 renderBarChart(AllData.filter((d,i)=>{return i<6}), "Acceleration");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"MPG");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"Cylinders");
@@ -124,6 +240,7 @@ renderBarChart(AllData.filter((d,i)=>{return i<8}),"Displacement");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"Horsepower");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"Weight");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"Year");
+update();
 });
 
 
