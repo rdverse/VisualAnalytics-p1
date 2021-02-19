@@ -87,7 +87,7 @@ def append_data(dfData, pcaa, pca2):
     dfData['pca1'] = pca1
     dfData['pca2'] = pca2
     plot_data(dfData)
-    dfData.to_csv('../../Data/pca_cars_Jitter.csv')
+    dfData.to_csv('../Data/pca_cars_Jitter.csv')
     return (dfData)
 
 
@@ -104,7 +104,7 @@ def jitter_values(pca_components, jitter):
 
 
 if __name__ == "__main__":
-    fileName = "../../Data/cars.csv"
+    fileName = "../Data/cars.csv"
     dfData, features = make_data(fileName)
 
     # Jitter is applied only after pca components are derived.

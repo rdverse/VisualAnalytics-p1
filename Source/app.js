@@ -48,12 +48,13 @@ function update(){
 // chart rendering algorithm
 const renderScatterChart = (data) => {
   var margin = {top: 20, right: 30, bottom: 60, left: 40},
-  width = 500 - margin.left - margin.right,
+  width = 1000 - margin.left - margin.right,
   height = 500 - margin.top - margin.bottom,
   radius = 3, 
   radiusZoom =12;
 
-
+var bmw2002Data = data.filter((d,i)=>{return d.Model=="bmw 2002"});
+console.log(bmw2002Data);
 var svg = d3.select("#PCAscatter")
   .append("svg")
   .attr("width", width + margin.left + margin.right)
@@ -93,6 +94,43 @@ var div = d3.select("body").append("div")
  
  ///////define tooltip for mouse hovering
  
+
+//  var descriptionTooltip = d3.select("#PCAscatter")
+//   .append("svg")
+//   .attr("width", 500)
+//   .attr("height", 50)
+//   .attr("x",0)
+//   .attr("y",0)
+//   .append("g")
+//   .attr("transform",
+//     "translate(" + 10 + "," + 10 + ")");
+
+  var descriptionTooltip = svg.append("g")
+                .attr("class", "tooltip")
+                .style("display", "inline");
+
+//  var descriptionTooltip = d3.select("#DisplatStats").append("svg")
+//  .append("g")
+//  .attr("class", "tooltip")
+//  .style("display", "inline");
+ 
+        
+//  descriptionTooltip.append("g:rect")
+//  .attr("width", 250)
+//  .attr("height", 100)
+//  .attr("x", 30)
+//  .attr("y", "1.2em")
+//  .attr("fill", "red")
+//  .style("opacity", 0.5);
+
+
+ descriptionTooltip.append("g:text")
+        .attr("x", 30)
+        .attr("y", "1.2em")
+        .style("text-anchor", "left")
+        .attr("font-size", "12px")
+        .attr("font-weight", "bold");
+        
  //points
  svg.selectAll("circle")
     .data(data).enter().append("circle")
@@ -103,14 +141,49 @@ var div = d3.select("body").append("div")
     .attr("r", radius)
     .attr("fill", "#081d58")
     .attr("fill-opacity", 0.4)
-    .on('mouseover', function (i, d) {
+    .on('pointerover', function (p, d) {
       d3.select(this).transition()
           .duration('100')
           .attr("r", radiusZoom);
-      var xCoord = d3.mouse(this)[0] + 20;
-      var yCoord = d3.mouse(this)[0] - 10;
-      console.log(xCoord);
-      console.log(yCoord);
+      
+  
+      descriptionTooltip.style("display", "inline")
+          .attr("transform", "translate(" + 25 + "," + 400 + ")");
+    
+        var floatFormat = d3.format(".1f");
+    
+    var mpg = d.MPG - bmw2002Data[0].MPG;
+    var cylinders = d.Cylinders - bmw2002Data[0].Cylinders;
+    var displacement = d.Displacement - bmw2002Data[0].Displacement;
+    var horsepower = d.Horsepower - bmw2002Data[0].Horsepower;
+    var weight = d.Weight - bmw2002Data[0].Weight;
+    var acceleration = d.Acceleration - bmw2002Data[0].Acceleration;
+    var year = d.Year - bmw2002Data[0].Year;
+    var origin = d.Origin - bmw2002Data[0].Origin;
+
+// console.log(d.Weight);
+
+    var textToDisplay = "Name: " + d.Model + 
+                  " MPG: " + floatFormat(mpg,1) +
+                  " Cylinders: " + floatFormat(cylinders,1)+
+                  " Displacement: " + floatFormat(displacement,1) +
+                  " Horsepower: " + floatFormat(horsepower,1) +
+                  " Weight: " + floatFormat(weight,1) +
+                  " Acceleration: " + floatFormat(acceleration,1) +
+                  " Year: " + floatFormat(year,1);
+          descriptionTooltip.select("text")
+      .text(textToDisplay);
+
+      // .enter()
+      // .append("text")
+      // .text(function(d){return(d.name);});
+      // var xCoord = d3.pointer(Event)[0] + 20;
+      // var yCoord = d3.pointer(Event)[0] - 10;
+      // var xCoord = d3.event.pageX;
+      // var yCoord = d3.event.pageY;
+      
+      // console.log(p.x);
+      // console.log(p.y);
 
       // div.transition()
       //     .duration(100)
@@ -120,7 +193,7 @@ var div = d3.select("body").append("div")
       //     .style("left", (d3.event.pageX + 10) + "px")
       //     .style("top", (d3.event.pageY - 15) + "px");
   })
-  .on('mouseout', function (d, i) {
+  .on('pointerout', function (d, i) {
       d3.select(this).transition()
           .duration('300')
           .attr("r", radius);
@@ -232,13 +305,6 @@ svg.append("g")
   .call(d3.axisLeft(y));
 
 
-//     d3.select('select')
-//     .on("change", function() {
-
-//     key = this.selectedIndex;
-// console.log(key);
-//   });
-
  //Bars
  svg.selectAll("myRect")
     .data(data)
@@ -258,8 +324,21 @@ svg.append("g")
     .style("text-decoration", "underline")
     .style('fill', 'blue')  
     .text(divname);  
-    };
+    
+  d3.select("#choice1").on("change", function(d){
+    selectedGroup = this.value;
+    console.log(selectedGroup);
+  })
 
+  
+  };
+
+
+
+    
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////Main Section/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //const url ="https://raw.githubusercontent.com/ReDevVerse/carsData/main/cars.csv"
 const url = "https://raw.githubusercontent.com/ReDevVerse/carsData/main/pca_cars_noOrigin.csv";
@@ -283,14 +362,25 @@ AllData.forEach(element => {
     element.Weight = +element.Weight;
     element.Year = +element.Year;
 });
-// console.log(AllData);
 
-const DUMMY_DATA = [
-    {id: 'd1', val: 10, reg: 'USA'},
-    {id: 'd2', val: 30, reg: 'Canada'},
-    {id: 'd3', val: 20, reg: 'India'},
-    {id: 'd4', val: 11, reg: 'China'}];
+
 renderScatterChart(AllData);
+
+//add selection criteria here
+// Once the user makes a choise, 
+// all graphs will be updated with that value
+
+d3.select("#choice1")
+  .selectAll('myOptions')
+  .data(AllData).enter()
+  .append("option")
+  .text(function(d){return(d.Model)})
+  .attr("value", function(d){return d;})
+
+
+
+
+
 renderBarChart(AllData.filter((d,i)=>{return i<6}), "Acceleration");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"MPG");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"Cylinders");
@@ -298,6 +388,8 @@ renderBarChart(AllData.filter((d,i)=>{return i<8}),"Displacement");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"Horsepower");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"Weight");
 renderBarChart(AllData.filter((d,i)=>{return i<8}),"Year");
+
+
 // update();
 });
 
