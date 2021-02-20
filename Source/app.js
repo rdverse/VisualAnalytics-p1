@@ -1,5 +1,7 @@
 
-
+var globalColorChoice = "MPG";
+var globalBarColorChoice = "#F2EFEE";
+var globalBmwBarColor = "#F2EFEE";
 // function update(){
 //   carname = svg.select("#DisplayStats");
     
@@ -52,7 +54,6 @@ function renderScatterChart(data) {
   height = 400 - margin.top - margin.bottom,
   radius = 3, 
   radiusZoom =12;
-
 var bmw2002Data = data.filter((d,i)=>{return d.Model=="bmw 2002"});
 console.log(bmw2002Data);
 var svg = d3.select("#PCAscatter")
@@ -88,57 +89,66 @@ var y = d3.scaleLinear()
 svg.append("g")
   .call(d3.axisLeft(y));
 ///////////////////////
-var div = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+// var div = d3.select("body").append("div")
+//     .attr("class", "tooltip")
+//     .style("opacity", 0);
  
  ///////define tooltip for mouse hovering
  
-
-//  var descriptionTooltip = d3.select("#PCAscatter")
-//   .append("svg")
-//   .attr("width", 500)
-//   .attr("height", 50)
-//   .attr("x",0)
-//   .attr("y",0)
-//   .append("g")
-//   .attr("transform",
-//     "translate(" + 10 + "," + 10 + ")");
 
   var descriptionTooltip = svg.append("g")
                 .attr("class", "tooltip")
                 .style("display", "inline");
 
-//  var descriptionTooltip = d3.select("#DisplatStats").append("svg")
-//  .append("g")
-//  .attr("class", "tooltip")
-//  .style("display", "inline");
- 
-        
-//  descriptionTooltip.append("g:rect")
-//  .attr("width", 250)
-//  .attr("height", 100)
-//  .attr("x", 30)
-//  .attr("y", "1.2em")
-//  .attr("fill", "red")
-//  .style("opacity", 0.5);
 
 
  descriptionTooltip.append("g:text")
         .attr("x", 30)
         .attr("y", "1.2em")
         .style("text-anchor", "left")
-        .attr("font-size", "12px")
-        .attr("font-weight", "bold");
+        .attr("font-size", "14px");
       
 //define colors here
 // var colorInterpolate = d3.scaleSequential()
 //         .domain([d3.min(data, d=>d.MPG), d3.max(data, d=>d.MPG)])
 //         .iterpolator(d3.interpolateBlues);
-  var colorTheme  = "Acceleration"
+/////Coloring zone///////////////////
+
+
+d3.select("#choiceColor")
+    .on("change", function(d){
+            globalColorChoice = d3.select(this).property("value");
+            d3.selectAll("svg").remove();
+            renderScatterChart(data);
+});
+
+
+// colorList.append("span")
+//           .text(d => d.name);
+// colorList.append("span").text(data => data.keys)
+
+// console.log(d3.keys(data[0]).slice(1));
+// selection.call(d3.zoom().on("zoom", zoomed));
+
+var colorTheme  = globalColorChoice;
+
+if(globalColorChoice!="Origin"){
   var myColor = d3.scaleSequential()
+  
   .domain([d3.min(data, d=>d[colorTheme]), d3.max(data, d=>d[colorTheme])])
-  .interpolator(d3.interpolateBlues);
+
+  .interpolator(d3.interpolateRdBu);
+}
+else{
+  var myColor = d3.scaleOrdinal(data.map(d=>d.Origin),d3.schemeSet2);
+}
+
+
+
+
+
+//////////////////////////////////////////////
+
 
  svg.selectAll("circle")
     .data(data).enter().append("circle")
@@ -157,9 +167,16 @@ var div = d3.select("body").append("div")
           .attr("r", radiusZoom);
       
   
-      descriptionTooltip.style("display", "inline")
-          .attr("transform", "translate(" + 25 + "," + 400 + ")");
     
+  // descriptionTooltip.append("g:text")
+  //   .attr("x", 30)
+  //   .attr("y", "1.2em")
+  //   .style("text-anchor", "left")
+  //   .attr("font-size", "12px")
+  //   .attr("font-weight", "bold");
+
+
+
         var floatFormat = d3.format(".1f");
     
     var mpg = d.MPG - bmw2002Data[0].MPG;
@@ -174,20 +191,27 @@ var div = d3.select("body").append("div")
 // console.log(d.Weight);
 
     var textToDisplay = "Name: " + d.Model + 
-                  " MPG: " + floatFormat(mpg,1) +
-                  " Cylinders: " + floatFormat(cylinders,1)+
-                  " Displacement: " + floatFormat(displacement,1) +
-                  " Horsepower: " + floatFormat(horsepower,1) +
-                  " Weight: " + floatFormat(weight,1) +
-                  " Acceleration: " + floatFormat(acceleration,1) +
-                  " Year: " + floatFormat(year,1);
-          descriptionTooltip.select("text")
-      .text(textToDisplay);
+                  "|    MPG: " + floatFormat(mpg,1) +
+                  "|    Cylinders: " + floatFormat(cylinders,1)+
+                  "|    Displacement: " + floatFormat(displacement,1) +
+                  "|    Horsepower: " + floatFormat(horsepower,1) +
+                  "|    Weight: " + floatFormat(weight,1) +
+                  "|    Acceleration: " + floatFormat(acceleration,1) +
+                  "|    Year: " + floatFormat(year,1) +
+                  "|    Origin: " + origin;
+      
+
+descriptionTooltip.style("display", "inline")
+  .attr("transform", "translate(" + 25 + "," + 270 + ")");
+  descriptionTooltip.select("text")
+      .text(textToDisplay)
+      .style("fill", "#fbcf66" );
 
       var Fdata = data
       var target = d.Model;
       Fdata = Fdata.filter((dd,ii)=>{
           return((dd.Model==target)||(dd.Model==bmw2002Data[0].Model));});
+
       console.log(Fdata);
       renderBarChart(Fdata, "Acceleration");
       renderBarChart(Fdata,"MPG");
@@ -223,43 +247,19 @@ var div = d3.select("body").append("div")
 
     d3.selectAll("svg").remove();
     renderScatterChart(data);
-    // d3.selectAll('myRect').transition();
-    // d3.select('#MPG').transition();
-    // d3.select('#Horsepower').transition();
-    // d3.select('#Year').remove();
-    // d3.select('#Displacement').remove();
-    // d3.select('#Weight').remove();
-    // d3.select('#Year').remove();
-    // d3.select('#Cylinders').remove();
     
-
-    // div.transition()
-      //     .duration('300')
-      //     .style("opacity", 0);
   });
 
-
-
-
-    console.log(data.filter((d,i)=>{return d.Model=="bmw 2002"}));
     svg.selectAll("circlebmw")
-    .data(data.filter((d,i)=>{return d.Model=="bmw 2002"}))
+    .data(bmw2002Data)
     .enter().append("circle")
     .attr("cx", function(d){return(x(d.pca1));})
     .attr("cy", function(d) { return(y(d.pca2));})
-    // .attr("width", function(d) { return x(d[divname]);})
-    .attr("r", radius)
-    .attr("fill", "red")
+    .attr("r", radiusZoom)
+    .attr("fill", globalBmwBarColor)
     .attr("fill-opacity", 1.0);
     
-
-    // var circles = svg.selectAll(".dot")
-    // .data(data);
-  //   d3.selectAll('select').on('change', function() {
-  //     update();
-  // });
-
-
+  
   svg.append("text")
     .attr("x", (width / 2))             
     .attr("y", (height+(16*3)))
@@ -268,22 +268,6 @@ var div = d3.select("body").append("div")
     .style("text-decoration", "underline")
     .style('fill', 'blue')  
     .text("Principal Component Analysis");  
-
-  //   svg.append("g")
-  //   .attr("fill", "none")
-  //   .attr("pointer-events", "all")
-  // .selectAll("rect")
-  // .data(d3.pairs(data))
-  // .join("rect")
-  //   .attr("x", ([a, b]) => x(a.date))
-  //   .attr("height", height)
-  //   .attr("width", ([a, b]) => x(b.date) - x(a.date))
-  //   .on("mouseover", (event, [a]) => tooltip.show(a))
-  //   .on("mouseout", () => tooltip.hide());
-
-// svg.append(() => tooltip.node);
-
-// return svg.node();
   
   }
 
@@ -421,7 +405,15 @@ AllData.forEach(element => {
     element.Year = +element.Year;
 });
 
-
+var dataColumns = ["MPG", "Acceleration", "Cylinders", "Displacement", "Displacement","Horsepower", "Weight", "Year", "Origin"];
+const colorList = d3.select("#choiceColor")
+                  .selectAll("myOptions")
+                  .data(dataColumns)
+                  .enter()
+                  .append("option")
+                  .text(function(d){return(d);})
+                  .attr("value",function(d){return(d);})
+                  ;
 renderScatterChart(AllData);
 
 //add selection criteria here
