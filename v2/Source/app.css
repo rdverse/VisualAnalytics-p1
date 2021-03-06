@@ -1,0 +1,14 @@
+#PCAscatter{
+  width: 60%;
+  height: 60%;
+  float:left; /* add this */
+  border: 1px solid red;
+}
+
+body {
+    margin: 10px;
+    overflow: hidden;
+    background-color:#202434;
+    color: #ffebcd;
+}
+  
