@@ -1,9 +1,17 @@
 #PCAscatter{
-  width: 60%;
-  height: 60%;
+  width: 50%;
+  height: 50%;
   float:left; /* add this */
-  border: 1px solid red;
+  border: 1px  #ffebcd;
 }
+
+#Stats{
+  width: 50%;
+  height: 10%;
+  float:left; /* add this */
+  
+}
+
 
 body {
     margin: 10px;

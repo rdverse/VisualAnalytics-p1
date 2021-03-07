@@ -1,9 +1,3 @@
-// Selection color defined in data loop that is used in scatter plot for choosing appropriate color schemes
-var globalColorChoice = "cluster";
-// sending the color scheme to bar plots
-var globalMyColor = "white";
-
-
 ///////////////////////////////////////////////////////////////
 /////////////Scatter Chart Renderer///////////////////////////
 /////////////////////////////////////////////////////////////
@@ -11,8 +5,8 @@ var globalMyColor = "white";
 function renderScatterChart(data) {
   //Define the shape of the plot width, height and everything else
   var margin = { top: 20, right: 30, bottom: 60, left: 40 },
-    width = 1200 - margin.left - margin.right,
-    height = 800 - margin.top - margin.bottom,
+    width = 1000 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom,
     // radius for scatter points
     radius = 3,
     // on mouse over
@@ -32,11 +26,10 @@ function renderScatterChart(data) {
 
   // Add a linear X-axis for the scatter plot
   var x = d3.scaleLinear()
-    .domain([d3.min(data, d => d.dim1), d3.max(data, d => d.dim1)])
+    .domain([d3.min(data, d => d.dim1) - 2, d3.max(data, d => d.dim1) + 2])
     .range([0, width]);
 
 
-  // Append a "graphic" element (everything in d3 needs a g) and add x axes
   svg.append("g")
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x))
@@ -47,28 +40,43 @@ function renderScatterChart(data) {
   // Define Y-axis, also linear, since it is a scatter plot
   var y = d3.scaleLinear()
     .range([0, height])
-    .domain([d3.min(data, d => d.dim1), d3.max(data, d => d.dim1)]);
+    .domain([d3.max(data, d => d.dim2) + 2, d3.min(data, d => d.dim2) - 2]);
 
   svg.append("g")
     .call(d3.axisLeft(y));
 
 
-  ///////define tooltip (actually only displaying the text, no rectangular box) for mouse hovering
+
   // This will be used to display the stats of the car chosen at the bottom of the graph
-  var descriptionTooltip = svg.append("g")
-    .attr("class", "tooltip")
-    .style("display", "inline");
+  // var descriptionTooltip = svg.append("g")
+  //   .attr("class", "tooltip")
+  //   .style("display", "inline");
 
   // g up the tooltip
-  descriptionTooltip.append("g:text")
-    .attr("x", 30)
-    .attr("y", "1.2em")
-    .style("text-anchor", "left")
-    .attr("font-size", "14px");
+  // descriptionTooltip.append("g:text")
+  //   .attr("x", 30)
+  //   .attr("y", "1.2em")
+  //   .style("text-anchor", "left")
+  //   .attr("font-size", "14px");
+
+///////////////////////////////////////////////////////////////////////////
+//////////////////////////Tooltip to show stats///////////////////////////
+/////////////////////////////////////////////////////////////////////////
+var tooltipMain = d3.select("#Stats")
+                .append("div")
+                .style("position", "absolute")
+                .style("visibility", "hidden")
+              //  .style("background-color", "white")
+                .style("color", "#fbcf66")
+                .style("border", "#ffebcd")
+                .style("border-width", "1px")
+                .style("border-radius", "5px")
+                .style("padding", "10px");
+                
+
 
 
   ////////Coloring zone/////////////////////
-
 
   // Choosing the appropriate color scheme here
     var myColor = d3.scaleOrdinal(data.map(d => d.cluster), d3.schemeSet2);
@@ -87,44 +95,62 @@ function renderScatterChart(data) {
     .attr("cy", function (d) { return (y(d.dim2)); })
     // .attr("width", function(d) { return x(d[divname]);})
     .attr("r", radius)
-    .attr("fill", function (d) { return (myColor(d[globalColorChoice])); })
+    .attr("fill", function (d) { return (myColor(d.cluster)); })
     .attr("fill-opacity", 0.6)
     .on('pointerover', function (p, d) {
 
       // Transitioning the mouse over, a sweet functionality of d3  
       d3.select(this).transition()
-        .duration('100')
+        .duration('400')
         .attr("r", radiusZoom);
 
       // for rounding values in a string
       var floatFormat = d3.format(".1f");
   
-        // Declare the text to be displayed when hover over bmw      
-      var textToDisplay = "Name: " + d.Model +
-        "|    MPG: " + floatFormat(d.MPG, 1) +
-        "|    Cylinders: " + floatFormat(d.Cylinders, 1) +
-        "|    Displacement: " + floatFormat(d.Displacement, 1) +
-        "|    Horsepower: " + floatFormat(d.Horsepower, 1) +
-        "|    Weight: " + floatFormat(d.Weight, 1) +
-        "|    Acceleration: " + floatFormat(d.Acceleration, 1) +
-        "|    Year: " + floatFormat(d.Year, 1) +
-        "|    Origin: " + d.Origin;
+        // Declare the text to be displayed when hover over bmw     
+        console.log("<img src='../flags/" + d.Origin + ".png' width=200 height=120></img>"); 
+      var textToDisplay = 
+       "<img src='../flags/" + d.Origin + ".png' width=200 height=100></img>" +
+        "<p>MPG: " + d.MPG +
+        "</p><p>Cylinders: " + d.Cylinders +
+        "</p><p>Displacement: " + d.Displacement +
+        "</p><p>Horsepower: " + d.Horsepower +
+        "</p><p>Weight: " + d.Weight+
+        "</p><p>Acceleration: " + d.Acceleration + "</p>";
       
       // Finally, once the mouse is hovered, the stats are displayed
-      descriptionTooltip.style("display", "inline")
-        .attr("transform", "translate(" + 25 + "," + 240 + ")");
-      descriptionTooltip.select("text")
-        .text(textToDisplay)
-        .style("fill", "#fbcf66");
+      // descriptionTooltip.style("display", "inline")
+      //   .attr("transform", "translate(" + 25 + "," + 240 + ")");
+      
+      //   descriptionTooltip.select("text")
+      //   .text(textToDisplay)
+      //   .style("fill", "#fbcf66");
+
+      tooltipMain.style("visibility", "visible")
+      .html(textToDisplay);
+//"<p>I'm a tooltip written in HTML</p><img src='https://github.com/holtzy/D3-graph-gallery/blob/master/img/section/ArcSmal.png?raw=true'></img><br>Fancy<br><span style='font-size: 40px;'>Isn't it?</span>"
+console.log(p);
+
+svg.append("text")
+.attr("x", p.x<width-300?p.x:p.x-330)
+.attr("y", p.y<height-100?p.y:p.y-50)
+.style("font-size", "18px")
+.style('fill', '#fbcf66')
+.text(d.Model_Year);
+
 
     })
     .on('pointerout', function (d, i) {
       d3.select(this).transition()
         .duration('300')
         .attr("r", radius);
+
       // Important! need to clear before plotting again
       d3.selectAll("svg").remove();
+     tooltipMain.style("visibility", "hidden");
+
       renderScatterChart(data);
+
 
     });
 
@@ -133,9 +159,9 @@ function renderScatterChart(data) {
     .attr("x", (width / 2))
     .attr("y", (height + (16 * 3)))
     .attr("text-anchor", "middle")
-    .style("font-size", "16px")
+    .style("font-size", "24px")
     .style("text-decoration", "underline")
-    .style('fill', '#e08a46')
+    .style('fill', '#fbcf66')
     .text("TSNE + Kmeans clustering analysis");
 
 
@@ -144,57 +170,40 @@ function renderScatterChart(data) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 // Attributes of legend to plot (location, color, text)
-var legendData = [{index : 0, text :"Cluster 0", color : myColor(0)},
-                      {index : 1, text :"Cluster 1", color : myColor(1)},
-                      {index : 2, text :"Cluster 2", color : myColor(2)}];
+var legendData = [{index : 0, text :"Cluster 1", color : myColor(0)},
+                      {index : 1, text :"Cluster 2", color : myColor(1)},
+                      {index : 2, text :"Cluster 3", color : myColor(2)}];
   
 var legendBox ={      
- xPos : 900,
+ xPos : width-200,
  yPos : 0,
  yBoxSize : 150,
- xdBoxSize : 200};
+ xBoxSize : 175};
 
-    svg.append("g")
+    svg
     .append("rect")
-    .attr("x", xLegendPostition)
-    .attr("y", yLegendPosition)
-    .attr("width", xlegendBoxSize)
-    .attr("height", ylegendBoxSize)
+    .attr("x", legendBox.xPos)
+    .attr("y", legendBox.yPos)
+    .attr("width", legendBox.xBoxSize)
+    .attr("height", legendBox.yBoxSize)
     .attr("fill", "#ffebcd")
     .attr("opacity",0.2);
     
-    svg.append("g")
-    .selectAll("legendCircles")
-    .data(legendData)
-    .enter()
-    .append("circle")
-    .attr("cx", (d)=>{return( + d.index*10);})
-    .attr("cy", (d)=>{return(150 + d.index*10);})
-    .attr("r", 20)
+    svg.selectAll("legendCircles")
+    .data(legendData).enter().append("circle")
+    .attr("cx", (d)=>{return(legendBox.xPos + 30);})
+    .attr("cy", (d)=>{return(legendBox.yPos + (legendBox.yBoxSize/3)*(d.index + 1) - (legendBox.yBoxSize/6));})
+    .attr("r", 5)
     .attr("fill", (d)=>{return(d.color);})
     .attr("opacity",0.9);
 
-    console.log(myColor(0));
-
+    svg.selectAll("legendText")
+    .data(legendData).enter().append("text")
+    .attr("x", (d)=>{return(legendBox.xPos + 50);})
+    .attr("y", (d)=>{return( legendBox.yPos +  ((legendBox.yBoxSize/3)*(d.index + 1) - (legendBox.yBoxSize/6)) + 7.5);})
+    .attr("fill", (d)=>{return(d.color);})
+    .text((d)=>{return(d.text);});
     
-    
-
-
-    // svg.append("text")
-    // .attr("x", (width- 100))
-    // .attr("y", (height - 250))
-    // .attr("text-anchor", "middle")
-    // .style("font-size", "12px")
-    // .style('fill', '#a9ab93')
-    // .text("Other Categories: Red(min) Blue(Max)");
-
-    // svg.append("text")
-    // .attr("x", (width- 100))
-    // .attr("y", (height - 275))
-    // .attr("text-anchor", "middle")
-    // .style("font-size", "12px")
-    // .style('fill', '#a9ab93')
-    // .text("Origin: Green(US) Blue(Europe) Orange(Japan)");
 }
 
 
@@ -217,7 +226,8 @@ d3.dsv(",", PATH, function(element) {
       Weight : +element.Weight,
       Year : +element.Year,
       Origin: element.Origin,
-      cluster: +element.cluster
+      cluster: +element.cluster,
+      Model_Year : element.Model_Year
 };
 }).then(function(AllData) {
    renderScatterChart(AllData);  
