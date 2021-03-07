@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.CustomBrowser": "chrome:PrivateMode",
+		"liveServer.settings.fullReload": true
+	}
+}
