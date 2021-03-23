@@ -1,0 +1,36 @@
+
+ #grid{
+    width: 45%;
+    height: 75%;
+    float:left; /* add this */
+    border: 1px solid#e08a46;
+  }
+
+  
+  #explanation{
+    width: 50%;
+    height: 75%;
+    float:right; /* add this */
+    border: 1px solid#e08a46;
+  }
+
+  #resetButton{
+    position : fixed,
+    bottom: 10,
+    right: 10
+    }
+  
+  
+  
+  
+  body {
+      margin: 10px;
+      overflow: hidden;
+      background-color: rgb(247, 237, 223);
+  }
+    
+/*  
+  width: 5%;
+    height: 5%;
+    float:left; /* add this */
+    border: 1px solid red; */
