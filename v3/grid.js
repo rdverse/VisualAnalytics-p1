@@ -1,30 +1,43 @@
-var click = 0;
-var clickedObj;
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////global variables/////////////////////////////
+////////////////////////////////////////////////////////////////////
+
+// The offset of the grid from x and y axes. (just to center the grid)
 var offset = 100;
 
+// To store the previous and current clicked squares position
 var objectTracer = {"previous" : {"x": 0, "y" : 0},
 					"current" : {"x": 0, "y" : 0}}
 
+// These two variables are used to store the state of clicking activity
 var clicked = false;
 var transition = false;
 
 
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////getData////////////////////////////////////
+/////////////////Function to get the array data/////////////////////
+////////////////////////////////////////////////////////////////////
 function getData() {
+	// declare array to store the data
 	var data = new Array();
-    var dataIndexer = new Array();
+
+	// initial position is offset point
 	var xpos = offset; 
 	var ypos = offset;
+
+	// width and height of each square
 	var width = 100;
 	var height = 100;
 	
-	// iterate for rows	
+	// iterate over rows	
 	for (var row = 0; row < 4; row++) {
 		data.push( new Array() );
 		
 		// iterate for cells/columns inside rows
 		for (var column = 0; column < 5; column++) {
-
-            dataIndexer.push({"row": row, "column" : column, "x": xpos, "y":ypos});
             
 			data[row].push({
 				"x": xpos,
@@ -34,23 +47,29 @@ function getData() {
                 "r": (column/5)*255,
                 "g": (row/4)*255
 			})
-
 			xpos += width;
 		}
 
 		xpos = offset;
-
 		ypos += height;	
 	}
 	return data;
 }
 
+
+
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////updateData////////////////////////////////////
+/////////////////Function to swap any two selected squares/////////////////////
+////////////////////////////////////////////////////////////////////
 function updateData(){
 
+// Get the previous and current data
 var prevData = gridData[(objectTracer.previous.y-offset) / 100][(objectTracer.previous.x-offset) / 100];
-
 var currData = gridData[(objectTracer.current.y-offset) / 100][(objectTracer.current.x-offset) / 100];
 
+// swap the colors of the two variables using temporaty variables
 var tempR = prevData.r;
 var tempG = prevData.g;
 
@@ -62,29 +81,33 @@ currData.g = tempG;
 
 gridData[(objectTracer.previous.y-offset) / 100][(objectTracer.previous.x-offset) / 100] = prevData;
 gridData[(objectTracer.current.y-offset) / 100][(objectTracer.current.x-offset) / 100] = currData;
-// gridData.push()
 
+// draw the grid again with the swapped data. data is accessed from globally declared variables
 drawGrid();
-// gridData
-
 }
 
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////drawGrid////////////////////////////////////
+/////////////////Function to draw the grid/////////////////////
+////////////////////////////////////////////////////////////////////
 function drawGrid() {
 
 d3.selectAll("svg").remove();
-console.log(gridData);
 
 var grid = d3.select("#grid")
 	.append("svg")
-	.attr("width","600px")
-	.attr("height","600px");
+	.attr("width","600")
+	.attr("height","600");
 	
+// First draw rows
 var row = grid.selectAll("row")
 	.data(gridData)
 	.enter()
     .append("g")
 	.attr("class", "row");
 	
+// draw columns on top of the rows
 var column = row.selectAll("square")
 	.data(function(d) { return d; })
 	.enter().append("rect")
@@ -98,28 +121,29 @@ var column = row.selectAll("square")
 	.on('click', function(d) {
 	   
         if(clicked){
+			// This is for the second click
 			objectTracer["current"]["x"] = d.explicitOriginalTarget.__data__.x; 
 		    objectTracer["current"]["y"] = d.explicitOriginalTarget.__data__.y; 
-		    console.log('current');
-			d3.select(this).transition().duration('1000').style("fill","rgb(0,0,0)");
 			clicked = false;
 			transition = true;
         }
         
         else{
+			// THis is for the  first click
 		    objectTracer["previous"]["x"] = d.explicitOriginalTarget.__data__.x; 
 		    objectTracer["previous"]["y"] = d.explicitOriginalTarget.__data__.y; 
-			console.log('previous');
-            d3.select(this).transition().duration('800').style("fill","rgb(0,0,0)");
+            d3.select(this).transition().duration('400').style("fill","rgb(0,0,0)");
             clicked = true;
         }
 
+		// once both square sare clicked transition
 		if(transition){
 			updateData();
 			transition = false;}
 
     });
 
+	// add text on top of the squares to show color intensity
 	var text = row.selectAll(".text")
 	.data(function(d) { return d; })
 	.enter()
@@ -132,17 +156,18 @@ var column = row.selectAll("square")
 	.text(function(d){return("r: " + d.r/255 + " ,g:" + d.g/255);})
 }
 
-
+// reset to default when the reset button is clicked
 function resetState(){
 	gridData = getData();
 	drawGrid();
 	}
 
-
+// get initial data
 var gridData = getData();
 drawGrid();
 
 
+// Explanation text
 var expText = "<span style='font-size: 12px;'>\
 					<p>Project2 : Direct Manipulation</p>\
 					<p>ZID : z1839739</p>\
@@ -166,6 +191,7 @@ var expText = "<span style='font-size: 12px;'>\
 					positions of all squares in the matrix.</p>\
 					</span>"
 
+// write the explanation on the right side of the page
 var exp = d3.select("#explanation")
                 .append("div")
                 .style("position", "absolute")
@@ -178,4 +204,4 @@ var exp = d3.select("#explanation")
 				exp.style("visibility", "visible")
 				.html(expText);
 		  
-		  console.log(p);
+
