@@ -1,4 +1,4 @@
-#PCAscatter{
+#Scatter{
   width: 50%;
   height: 50%;
   float:left; /* add this */
@@ -16,7 +16,7 @@
 body {
     margin: 10px;
     overflow: hidden;
-    background-color:#202434;
-    color: #ffebcd;
+    background-color:#24293f;
+    color: #eeddc3;
 }
   

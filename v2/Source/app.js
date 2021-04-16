@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////
-/////////////Scatter Chart Renderer///////////////////////////
+/////////////Scatter Plot///////////////////////////
 /////////////////////////////////////////////////////////////
 
-function renderScatterChart(data) {
+function ScatterPlot(data) {
   //Define the shape of the plot width, height and everything else
   var margin = { top: 20, right: 30, bottom: 60, left: 40 },
     width = 1000 - margin.left - margin.right,
@@ -14,7 +14,7 @@ function renderScatterChart(data) {
 
 
   // Define an svg element for the scatter plot
-  var svg = d3.select("#PCAscatter")
+  var svg = d3.select("#Scatter")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -47,17 +47,6 @@ function renderScatterChart(data) {
 
 
 
-  // This will be used to display the stats of the car chosen at the bottom of the graph
-  // var descriptionTooltip = svg.append("g")
-  //   .attr("class", "tooltip")
-  //   .style("display", "inline");
-
-  // g up the tooltip
-  // descriptionTooltip.append("g:text")
-  //   .attr("x", 30)
-  //   .attr("y", "1.2em")
-  //   .style("text-anchor", "left")
-  //   .attr("font-size", "14px");
 
 ///////////////////////////////////////////////////////////////////////////
 //////////////////////////Tooltip to show stats///////////////////////////
@@ -75,8 +64,7 @@ var tooltipMain = d3.select("#Stats")
                 
 
 
-
-  ////////Coloring zone/////////////////////
+  ////////Coloring /////////////////////
 
   // Choosing the appropriate color scheme here
     var myColor = d3.scaleOrdinal(data.map(d => d.cluster), d3.schemeSet2);
@@ -84,16 +72,14 @@ var tooltipMain = d3.select("#Stats")
 
 
   ////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////On moise point over a scatter point [And] Scatter plot main///////////////
+  ///////////////Scatter plot main////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // PLot a scatter point for bmw that is always zoomed in 
  
 
   svg.selectAll("circle")
     .data(data).enter().append("circle")
     .attr("cx", function (d) { return (x(d.dim1)); })
     .attr("cy", function (d) { return (y(d.dim2)); })
-    // .attr("width", function(d) { return x(d[divname]);})
     .attr("r", radius)
     .attr("fill", function (d) { return (myColor(d.cluster)); })
     .attr("fill-opacity", 0.6)
@@ -118,18 +104,9 @@ var tooltipMain = d3.select("#Stats")
         "</p><p>Weight: " + d.Weight+
         "</p><p>Acceleration: " + d.Acceleration + "</p>";
       
-      // Finally, once the mouse is hovered, the stats are displayed
-      // descriptionTooltip.style("display", "inline")
-      //   .attr("transform", "translate(" + 25 + "," + 240 + ")");
-      
-      //   descriptionTooltip.select("text")
-      //   .text(textToDisplay)
-      //   .style("fill", "#fbcf66");
 
       tooltipMain.style("visibility", "visible")
       .html(textToDisplay);
-//"<p>I'm a tooltip written in HTML</p><img src='https://github.com/holtzy/D3-graph-gallery/blob/master/img/section/ArcSmal.png?raw=true'></img><br>Fancy<br><span style='font-size: 40px;'>Isn't it?</span>"
-console.log(p);
 
 svg.append("text")
 .attr("x", p.x<width-300?p.x:p.x-330)
@@ -145,12 +122,11 @@ svg.append("text")
         .duration('300')
         .attr("r", radius);
 
-      // Important! need to clear before plotting again
+      // Need to clear before plotting again
       d3.selectAll("svg").remove();
      tooltipMain.style("visibility", "hidden");
 
-      renderScatterChart(data);
-
+      ScatterPlot(data);
 
     });
 
@@ -230,17 +206,7 @@ d3.dsv(",", PATH, function(element) {
       Model_Year : element.Model_Year
 };
 }).then(function(AllData) {
-   renderScatterChart(AllData);  
+   ScatterPlot(AllData);  
 
 });
 
-
-//////////////////////////////////////////////////////
-/////////////Flow of program/////////////////////////
-////////////////////////////////////////////////////
-
-// First in the data loop, csv is fetched and a call is made to renderScatterPlot
-// In the data loop, the selection button for the colors is also defined
-
-// scatter function plots a scatter plot, and mouse over action is defined, 
-// scatter plot then call renderBarplot based on the selections made in the scatter chart
