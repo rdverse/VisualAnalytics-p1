@@ -1,0 +1,7 @@
+v4/*.txt
+v4/*.jog
+v4/*.json
+v4/*.csv
+v4/*.xml
+
+*/.ipynb_checkpoints/*
