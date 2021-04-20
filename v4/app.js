@@ -16,6 +16,40 @@ var allValues = new Array();
 
 jsonData = jsonData["documents"]["document"];
 
+function wrap(text, width) {
+   text.each(function () {
+       var text = d3.select(this),
+           words = text.text().split(/\s+/).reverse(),
+           word,
+           line = [],
+           lineNumber = 0,
+           lineHeight = 1.1, // ems
+           x = text.attr("x"),
+           y = text.attr("y"),
+           dy = 0, //parseFloat(text.attr("dy")),
+           tspan = text.text(null)
+                       .append("tspan")
+                       .attr("x", x)
+                       .attr("y", y)
+                       .attr("dy", dy + "em");
+       while (word = words.pop()) {
+           line.push(word);
+           tspan.text(line.join(" "));
+           if (tspan.node().getComputedTextLength() > width) {
+               line.pop();
+               tspan.text(line.join(" "));
+               line = [word];
+               tspan = text.append("tspan")
+                           .attr("x", x)
+                           .attr("y", y)
+                           .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                           .text(word);
+           }
+       }
+   });
+}
+
+
 // function to fetch the data from the github repo
 const fetchText = async (url) => {
    const response = await fetch(url);
@@ -103,9 +137,62 @@ function displayDocs(){
    }
 
 }
-console.log(filteredDocNames);
-
+docChoice(filteredDocNames);
 }
+
+function docChoice(filteredDocNames){
+
+    d3.select("#availableDocs").selectAll("svg").remove();
+
+   var svg = d3.select("#availableDocs")
+    	.append("svg")
+        	.attr("width","600")
+        	.attr("height","60");
+
+   var text = svg.selectAll('docTextChoice')
+   .data(filteredDocNames)
+  .enter().append('text')
+   .attr("x", function(d,i){return(10 + i*60)})
+   .attr("y", function(d,i){return 50})
+   .attr("fill", "#000")
+   .text(function(d){return d})
+   .on('click', function(d) {
+      
+      var docToShow = d.path[0].__data__;
+      displayDocText(docToShow);   
+   });
+}
+
+function displayDocText(docToShow){
+var selectDocText =  jsonData.filter((dd, ii) => {
+   return (dd.docID == docToShow);
+ });
+ //selectDocText = selectDocText[0];
+ console.log(selectDocText);
+
+ d3.select("#docViewer").selectAll("svg").remove();
+
+ var svg = d3.select("#docViewer")
+     .append("svg")
+         .attr("width","1000")
+         .attr("height","1000");
+
+ var text = svg.selectAll('docText')
+ .data(selectDocText)
+.enter().append('text')
+.attr("class", "docText")
+ .attr("x", function(d,i){return(10)})
+ .attr("y", function(d,i){return 50})
+ .attr("fill", "#000")
+ .text(function(d){console.log(d.docText);return d.docText})
+ .call(wrap,500);
+
+//  d3plus.textwrap()
+//  .container(d3.select('#docViewer'))
+//  .draw();
+}
+
+   
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////drawGrid////////////////////////////////////
@@ -120,8 +207,6 @@ gData = gridData;
 // var rowNames =  d3.scaleLinear()
 // .domain([0, d3.max(data, d => d.x)])
 // .range([0, width]);
-
-
 //var colNames
 
    var grid = d3.select("#grid")
@@ -276,7 +361,7 @@ function resetState(){
 
     d3.select("#choiceRow")
     .on("change", function (d) {
-       console.log("choiseeeeeeeeeeee");
+      //  console.log("choiseeeeeeeeeeee");
       globalRowChoice = d3.select(this).property("value");
       console.log(globalRowChoice);
       //d3.selectAll("svg").remove();
