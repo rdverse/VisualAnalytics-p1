@@ -1,7 +1,7 @@
   function drawChord(){
   
   // create the svg area
-  var svg = d3.select("#my_dataviz")
+  var svg = d3.select("#chordRow")
     .append("svg")
       .attr("width", 600)
       .attr("height", 600)

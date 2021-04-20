@@ -208,6 +208,43 @@ function resetState(){
 	//drawGrid();
 	}
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////choice buttons//////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+  // Declare the color choice selector here (will be displayed on the right corner of the screen) 
+  var dataColumns = ["Person", "Location", "Phone", "Date", "Organization"];
+  const choiceRow = d3.select("#choiceRow")
+    .selectAll("optionsRow")
+    .data(dataColumns)
+    .enter()
+    .append("option")
+    .text(function (d) { return (d); })
+    .attr("value", function (d) { return (d); })
+    ;
+
+    const choiceCol = d3.select("#choiceCol")
+    .selectAll("optionsCol")
+    .data(dataColumns)
+    .enter()
+    .append("option")
+    .text(function (d) { return (d); })
+    .attr("value", function (d) { return (d); })
+    ;
+
+    d3.select("#choiceRow")
+    .on("change", function (d) {
+      //globalColorChoice = d3.select(this).property("value");
+      //d3.selectAll("svg").remove();
+     // renderScatterChart(data);
+    });
+    d3.select("#choiceCol")
+    .on("change", function (d) {
+      //globalColorChoice = d3.select(this).property("value");
+     // d3.selectAll("svg").remove();
+     // renderScatterChart(data);
+    });
+
+
 // get initial data
 getData();
 //drawGrid(gridData);

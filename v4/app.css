@@ -1,23 +1,47 @@
 
+#docViewer{
+  width: 100%;
+  height: 25%;
+  float:left; /* add this */
+  border: 2px solid#e08a46;
+}
+
+#choices{
+  width: 25%;
+height: 25%; /* add this */
+}
+
+#availableDocs{
+  width: 75%;
+height: 25%;
+float:right; /* add this */
+}
+
  #grid{
-    width: 65%;
+    width: 80%;
     height: 75%;
     float:left; /* add this */
     border: 2px solid#e08a46;
   }
 
   
-  #my_datavis{
-    width: 35%;
-    height: 25%;
-    float:right; /* add this */
+
+
+
+  #chordRow{
+    width: 50%;
+    height: 50%;
+    float:left; /* add this */
     border: 2px solid#e08a46;
   }
 
 /* 
   #resetButton{
     position : fixed    } */
-  
+
+    
+     
+    
 
   body {
       margin: 10px;
