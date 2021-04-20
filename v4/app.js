@@ -62,12 +62,19 @@ var gData;
 /////////////////Function to get the array data/////////////////////
 ////////////////////////////////////////////////////////////////////
 function getData() {
+   allValues = new Array();
+
    var data = new Array();
-   var url = 'https://raw.githubusercontent.com/ReDevVerse/carsData/main/matrix.csv';
-      // Once the data is fetched, convert the strings to integer/float
-fetchText(url).then((textData) => {
+
+   var url = 'https://raw.githubusercontent.com/ReDevVerse/carsData/main/matrix/' + globalRowChoice + globalColChoice +'.csv';
+   console.log(url);
+   // Once the data is fetched, convert the strings to integer/float
+
+      fetchText(url).then((textData) => {
    const AllData = d3.csvParse(textData);
-   //console.log(AllData);
+   console.log(AllData);
+   console.log(d3.max(AllData));
+   
    //console.log(d3.max(AllData.map(function(d){return(d[0].value);})));
    
    var xpos = offset;
@@ -102,7 +109,11 @@ fetchText(url).then((textData) => {
                "clicked":false
          }); 
       }  
+      
+      if(+value==+value){
       allValues.push(+value);
+      }
+
       xpos+=sqDim; 
       j++;
        }
@@ -174,8 +185,8 @@ var selectDocText =  jsonData.filter((dd, ii) => {
 
  var svg = d3.select("#docViewer")
      .append("svg")
-         .attr("width","1000")
-         .attr("height","1000");
+         .attr("width","1200")
+         .attr("height","600");
 
  var text = svg.selectAll('docText')
  .data(selectDocText)
@@ -185,7 +196,7 @@ var selectDocText =  jsonData.filter((dd, ii) => {
  .attr("y", function(d,i){return 50})
  .attr("fill", "#000")
  .text(function(d){console.log(d.docText);return d.docText})
- .call(wrap,500);
+ .call(wrap,1000);
 
 //  d3plus.textwrap()
 //  .container(d3.select('#docViewer'))
@@ -201,7 +212,7 @@ var selectDocText =  jsonData.filter((dd, ii) => {
 
 function drawGrid(gridData) {
 gData = gridData;
-   //d3.selectAll("svg").remove();
+   d3.selectAll("svg").remove();
    //console.log(gridData);
 
 // var rowNames =  d3.scaleLinear()
@@ -220,10 +231,11 @@ var row = grid.selectAll("row")
 	.enter()
     .append("g")
 	.attr("class", "row");
-	
+	console.log(d3.min(allValues), d3.max(allValues));
+
    var color1 = d3.scaleLinear()
-   .domain([0, d3.max(allValues)])
-   .range(['white', 'blue'])
+   .domain([d3.min(allValues), d3.max(allValues)])
+   .range(['#d73027', '#1a9850'])
    .interpolate(d3.interpolateHcl);
 //console.log(d3.max(allValues));
 
@@ -241,8 +253,6 @@ var column = row.selectAll("square")
    .style("fill", function(d){return(color1(d.value));})
    .style("stroke", "rgb(255,255,255)")
    .on('click', function(d) {
-
-
       var dataPoint;
       for(let i=0;i<gridData.length;i++){
 
@@ -254,17 +264,26 @@ var column = row.selectAll("square")
    }  
    
   // displayDocs(dataPoint);
-
    //console.log(dataPoint);  
       if(gridData[dataPoint.i][dataPoint.j].clicked){
-         d3.select(this).transition().duration('400').style("fill",color1(dataPoint.value));
+         d3.select(this).transition().duration('400')
+         .attr("x", dataPoint.x)
+         .attr("y", dataPoint.y)        
+         .attr("width", dataPoint.width)
+         .attr("height",dataPoint.height)
+         .style("fill",color1(dataPoint.value));
          
          gridData[dataPoint.i][dataPoint.j].clicked=false;
          //console.log(this);
       }
 
       else{
-         d3.select(this).transition().duration('400').style("fill","rgb(90,90,90)");
+         d3.select(this).transition().duration('400')
+         .attr("x", dataPoint.x + sqDim/4)
+	      .attr("y", dataPoint.y + sqDim/4)
+         .attr("width", sqDim/2)
+	      .attr("height",sqDim/2)
+         .style("fill","rgb(90,90,90)");
          gridData[dataPoint.i][dataPoint.j].clicked=true;
       }
          
@@ -304,10 +323,9 @@ for(let i=0;i<gridData.length;i++){
     //translate to push the names towards right and rotate the labels
     .attr("transform", "translate(" +offset+",0)rotate(0)")
     .style("text-anchor", "end") .on('mouseover', function(d) {
-      //console.log("this"); 
-      //console.log(this);
-      //console.log("d");
+   
       hoverOnData = d.path[0].__data__;
+   
       hoverOnAttribute = globalRowChoice;
       displayDocs();
       
@@ -336,11 +354,19 @@ function resetState(){
 	//drawGrid();
 	}
 
+
+   function start(){
+      //drawGrid(gridData);
+      getData();
+      drawChord();
+   }
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////choice buttons//////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
   // Declare the color choice selector here (will be displayed on the right corner of the screen) 
-  var dataColumns = ["Person", "Location", "Phone", "Date", "Organization"];
+  var dataColumns = ["Location", "Phone", "Date", "Organization", "Person"];
+
   const choiceRow = d3.select("#choiceRow")
     .selectAll("optionsRow")
     .data(dataColumns)
@@ -370,6 +396,8 @@ function resetState(){
     d3.select("#choiceCol")
     .on("change", function (d) {
       globalColChoice = d3.select(this).property("value");
+      console.log(globalColChoice);
+
      // d3.selectAll("svg").remove();
      // renderScatterChart(data);
     });
@@ -384,6 +412,3 @@ function resetState(){
 // console.log('sdf');
 // });
 // get initial data
-getData();
-//drawGrid(gridData);
-drawChord()

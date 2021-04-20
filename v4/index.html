@@ -3,15 +3,11 @@
   <head>
     <title>Project 2</title>
     <link rel="stylesheet" href="app.css">
-    <script src="//d3plus.org/js/d3.js"></script>
-<script src="//d3plus.org/js/d3plus.js"></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="https://d3js.org/colorbrewer.v1.min.js"></script>
-
   </head>
   <!-- <body>
 
-    
     <div id="Initial"></div>
     <div id="my_dataviz"></div>
 
@@ -20,19 +16,21 @@
     <script src="data.js"></script> 
 
 </body> -->
-<body>
 
+<body>
   
   <div id="choices">
     <select id="choiceRow"></select>
     <select id="choiceCol"></select>
-    <button type="button" id ="resetButton" onclick="resetState()">reset</button>
+
+    <button type="button" id ="startButton" onclick="start()">Draw</button>
+    <button type="button" id ="resetButton" onclick="resetState()">Reset</button>
   </div>
   
   <div id="availableDocs"></div> 
-
-  <div id="grid"></div>
   <div id="docViewer"></div> 
+  <div id="grid"></div>
+
 
   <div id="chordRow"></div>
   <div id="chordCol"></div>
