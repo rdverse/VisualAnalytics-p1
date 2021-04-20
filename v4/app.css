@@ -1,0 +1,26 @@
+
+ #grid{
+    width: 65%;
+    height: 75%;
+    float:left; /* add this */
+    border: 2px solid#e08a46;
+  }
+
+  
+  #my_datavis{
+    width: 35%;
+    height: 25%;
+    float:right; /* add this */
+    border: 2px solid#e08a46;
+  }
+
+/* 
+  #resetButton{
+    position : fixed    } */
+  
+
+  body {
+      margin: 10px;
+    overflow: scroll;
+      background-color: rgb(247, 237, 223);
+  }

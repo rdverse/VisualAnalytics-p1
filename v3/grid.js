@@ -122,16 +122,16 @@ var column = row.selectAll("square")
 	   
         if(clicked){
 			// This is for the second click
-			objectTracer["current"]["x"] = d.explicitOriginalTarget.__data__.x; 
-		    objectTracer["current"]["y"] = d.explicitOriginalTarget.__data__.y; 
+			objectTracer["current"]["x"] = d.path[0].__data__.x; 
+		    objectTracer["current"]["y"] = d.path[0].__data__.y; 
 			clicked = false;
 			transition = true;
         }
         
         else{
 			// THis is for the  first click
-		    objectTracer["previous"]["x"] = d.explicitOriginalTarget.__data__.x; 
-		    objectTracer["previous"]["y"] = d.explicitOriginalTarget.__data__.y; 
+		    objectTracer["previous"]["x"] = d.path[0].__data__.x; 
+		    objectTracer["previous"]["y"] = d.path[0].__data__.y; 
             d3.select(this).transition().duration('400').style("fill","rgb(0,0,0)");
             clicked = true;
         }
