@@ -3,7 +3,19 @@
 ////////////////////////////////////////////////////////////////////////////////////
 var sqDim  = 25;
 var offset = 200;
+// attribute the mouse hovered over
+var hoverOnAttribute;
+var hoverOnData;
+
+
+var globalRowChoice;
+var globalColChoice;
+
 var allValues = new Array();
+
+
+jsonData = jsonData["documents"]["document"];
+
 // function to fetch the data from the github repo
 const fetchText = async (url) => {
    const response = await fetch(url);
@@ -21,8 +33,8 @@ function getData() {
       // Once the data is fetched, convert the strings to integer/float
 fetchText(url).then((textData) => {
    const AllData = d3.csvParse(textData);
-   console.log(AllData);
-   console.log(d3.max(AllData.map(function(d){return(d[0].value);})));
+   //console.log(AllData);
+   //console.log(d3.max(AllData.map(function(d){return(d[0].value);})));
    
    var xpos = offset;
    var ypos = offset;
@@ -69,6 +81,32 @@ drawGrid(data);
 //console.log(data);
 }
 
+
+////////////////////////////////////////////////////////////////////////
+/////////////////////////displayDocs////////////////////////////////////
+/////////////////Function to display docs associated with selection/////
+///////////////////////////////////////////////////////////////////////
+function displayDocs(){
+
+   var filteredDocNames = new Array();
+   for(let i=0;i<jsonData.length;i++){
+
+      if(jsonData[i].hasOwnProperty(hoverOnAttribute)){
+         //console.log(jsonData[i][hoverOnAttribute].length);
+      for(let j=0;j<jsonData[i][hoverOnAttribute].length;j++){
+    {  
+       if(jsonData[i][hoverOnAttribute][j]==hoverOnData){
+         filteredDocNames.push(jsonData[i].docID);
+       }
+      }
+   } 
+   }
+
+}
+console.log(filteredDocNames);
+
+}
+
 /////////////////////////////////////////////////////////////////////
 /////////////////////////drawGrid////////////////////////////////////
 /////////////////Function to draw the grid/////////////////////
@@ -102,7 +140,7 @@ var row = grid.selectAll("row")
    .domain([0, d3.max(allValues)])
    .range(['white', 'blue'])
    .interpolate(d3.interpolateHcl);
-console.log(d3.max(allValues));
+//console.log(d3.max(allValues));
 
 // draw columns on top of the rows
 var column = row.selectAll("square")
@@ -128,13 +166,16 @@ var column = row.selectAll("square")
             dataPoint=gridData[i][j];
          }
       } 
-   }    
-   console.log(dataPoint);  
+   }  
+   
+  // displayDocs(dataPoint);
+
+   //console.log(dataPoint);  
       if(gridData[dataPoint.i][dataPoint.j].clicked){
          d3.select(this).transition().duration('400').style("fill",color1(dataPoint.value));
          
          gridData[dataPoint.i][dataPoint.j].clicked=false;
-         console.log(this);
+         //console.log(this);
       }
 
       else{
@@ -151,7 +192,7 @@ var dataCols = new Array();
 var dataRows = new Array(); 
 
 for(let i=0;i<gridData.length;i++){
-console.log(gridData[i].length);
+//console.log(gridData[i].length);
      for(let j=0;j<gridData[i].length;j++){
    if(j==0){
       dataRows.push(gridData[i][j]);
@@ -162,8 +203,8 @@ console.log(gridData[i].length);
    }
 }
 
-console.log(dataRows[0].indexRow);
-console.log(dataRows[0].indexRow);
+//console.log(dataRows[0].indexRow);
+//console.log(dataRows[0].indexRow);
 
   // Define linear x axis for barplot (horizontal bar plot)
   var rowText = d3.scaleBand()
@@ -177,11 +218,13 @@ console.log(dataRows[0].indexRow);
     .selectAll("text")
     //translate to push the names towards right and rotate the labels
     .attr("transform", "translate(" +offset+",0)rotate(0)")
-    .style("text-anchor", "end") .on('dblclick', function(d) {
-      console.log("this"); 
-console.log(this);
-      console.log("d");
-      console.log(d.path[0].__data__);
+    .style("text-anchor", "end") .on('mouseover', function(d) {
+      //console.log("this"); 
+      //console.log(this);
+      //console.log("d");
+      hoverOnData = d.path[0].__data__;
+      hoverOnAttribute = globalRowChoice;
+      displayDocs();
       
          
    });
@@ -233,18 +276,28 @@ function resetState(){
 
     d3.select("#choiceRow")
     .on("change", function (d) {
-      //globalColorChoice = d3.select(this).property("value");
+       console.log("choiseeeeeeeeeeee");
+      globalRowChoice = d3.select(this).property("value");
+      console.log(globalRowChoice);
       //d3.selectAll("svg").remove();
      // renderScatterChart(data);
     });
     d3.select("#choiceCol")
     .on("change", function (d) {
-      //globalColorChoice = d3.select(this).property("value");
+      globalColChoice = d3.select(this).property("value");
      // d3.selectAll("svg").remove();
      // renderScatterChart(data);
     });
 
 
+
+// var jsonTest;
+// console.log("fesfa");
+// d3.json('https://raw.githubusercontent.com/ReDevVerse/carsData/main/testJson.json', function(error,dat){
+// console.log(error);
+// console.log(dat);
+// console.log('sdf');
+// });
 // get initial data
 getData();
 //drawGrid(gridData);

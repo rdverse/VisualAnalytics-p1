@@ -38,7 +38,7 @@
     .append("g")
     .selectAll("g")
     .data(function(d) { 
-      console.log(d.groups);
+      //console.log(d.groups);
       return d.groups; })
     .enter()
     .append("g")
