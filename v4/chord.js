@@ -1,14 +1,9 @@
-  function drawChord(){
-  
-  // create the svg area
-  var svg = d3.select("#chordRow")
-    .append("svg")
-      .attr("width", 600)
-      .attr("height", 600)
-    .append("g")
-      .attr("transform", "translate(300,300)")
+  function drawChord(divName, data, specificData){
+    d3.select(divName).selectAll("svg").remove();
 
-  // create a matrix
+console.log(specificData);
+
+    // create a matrix
   var matrix = [
     [0,  5871, 8916, 2868],
     [ 1951, 0, 2060, 6171],
@@ -20,7 +15,19 @@
                 [20,0,40],
                 [15,25,0]
   ];
-  var fill = d3.scaleOrdinal()
+  
+  
+  
+    // create the svg area
+  var svg = d3.select(divName)
+    .append("svg")
+      .attr("width", 600)
+      .attr("height", 600)
+    .append("g")
+      .attr("transform", "translate(300,300)")
+
+  
+      var fill = d3.scaleOrdinal()
     .range(colorbrewer.Spectral[6]);
 
   // 4 groups, so create a vector of 4 colors
