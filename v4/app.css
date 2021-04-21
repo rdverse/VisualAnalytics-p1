@@ -6,13 +6,13 @@ height: 10%; /* add this */
 }
 
 #availableDocs{
-width: 25%;
+width: 100%;
 height: 25%;
 float:left; /* add this */
 }
 
 #docViewer{
-  width: 75%;
+  width: 100%;
   height: 25%;
   float:right; /* add this */
   /* border: 2px solid#e08a46; */
@@ -21,7 +21,8 @@ float:left; /* add this */
  #grid{
     width: 100%;
     height: 100%;
-    float:left; /* add this */
+    float:left;
+     /* add this */
     /* border: 2px solid#e08a46; */
   }
 
@@ -33,7 +34,16 @@ float:left; /* add this */
   #chordRow{
     width: 50%;
     height: 50%;
-    float:left; /* add this */
+    float:left; 
+    font-weight: bold/* add this */
+    /* border: 2px solid#e08a46; */
+  }
+
+  #chordCol{
+    width: 50%;
+    height: 50%;
+    float:right; 
+    font-weight: bold/* add this */
     /* border: 2px solid#e08a46; */
   }
 

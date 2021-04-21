@@ -65,31 +65,6 @@ const fetchText = async (url) => {
 /////////////////////////makeGridData////////////////////////////////////
 /////////////////Function to get the array data/////////////////////
 ////////////////////////////////////////////////////////////////////
-// async function getData(url, type){
-
-//    console.log('getdata');
-//    await fetchText(url).then((textData) => {
-//       const AllData = d3.csvParse(textData);
-//       setGlobalData(AllData, type);
-//    });
-//    return(true);
-// }
-
-// function setGlobalData(AllData, type){
-
-//    console.log('set globaldata');
-// if(type=='grid'){
-// gData= AllData;
-// console.log(AllData);
-// }
-// if(type=='row'){
-
-// }
-// if(type=='col'){
-
-// }
-
-// }
 
 function makeGridData() {
    allValues = new Array();
@@ -131,8 +106,6 @@ function makeGridData() {
                "value" : +value,
                "x" : xpos,
                "y" :ypos,
-   //            "r": (i/5)*255,
-     //          "g": (j/4)*255,
    				"width": sqDim,
 				   "height": sqDim,
                "clicked":false
@@ -247,11 +220,8 @@ var selectDocText =  jsonData.filter((dd, ii) => {
  .attr("y", function(d,i){return 50})
  .attr("fill", "#000")
  .text(function(d){console.log(d.docText);return d.docText})
+ // wrap function taken from Mike Bostock
  .call(wrap,1000);
-
-//  d3plus.textwrap()
-//  .container(d3.select('#docViewer'))
-//  .draw();
 }
 
    
@@ -264,12 +234,6 @@ var selectDocText =  jsonData.filter((dd, ii) => {
 function drawGrid(gridData) {
    gData=gridData;
    d3.selectAll("svg").remove();
-   //console.log(gridData);
-
-// var rowNames =  d3.scaleLinear()
-// .domain([0, d3.max(data, d => d.x)])
-// .range([0, width]);
-//var colNames
 
    var grid = d3.select("#grid")
 	.append("svg")
@@ -288,7 +252,6 @@ var row = grid.selectAll("row")
    .domain([d3.min(allValues), d3.max(allValues)])
    .range(['white', 'blue'])
    .interpolate(d3.interpolateHcl);
-//console.log(d3.max(allValues));
 
 // draw columns on top of the rows
 var column = row.selectAll("square")
@@ -299,8 +262,6 @@ var column = row.selectAll("square")
 	.attr("y", function(d) { return d.y; })
 	.attr("width", function(d) { return d.width; })
 	.attr("height", function(d) { return d.height; })
-   //.style("fill", function(d){return("rgb(" + 100 + "," + 100 + ",255)");})
-	//.style("fill", function(d){return("rgb(" + 250 + "," + 250 + ","+ d.value*100 +")");})
    .style("fill", function(d){return(color1(d.value));})
    .style("stroke", "rgb(255,255,255)")
    .on('click', function(d) {
@@ -314,8 +275,7 @@ var column = row.selectAll("square")
       } 
    }  
    
-  // displayDocs(dataPoint);
-   //console.log(dataPoint);  
+ 
       if(gridData[dataPoint.i][dataPoint.j].clicked){
          d3.select(this).transition().duration('400')
          .attr("x", dataPoint.x)
@@ -335,8 +295,7 @@ var column = row.selectAll("square")
          if (icol > -1) {
              colsSelected.splice(icol, 1);
          }
-         //makeRowData();
-         //makeColData();
+
       }
 
       else{
@@ -384,8 +343,7 @@ for(let i=0;i<gridData.length;i++){
    }
 }
 
-//console.log(dataRows[0].indexRow);
-//console.log(dataRows[0].indexRow);
+
 
   // Define linear x axis for barplot (horizontal bar plot)
   var rowText = d3.scaleBand()
@@ -394,15 +352,14 @@ for(let i=0;i<gridData.length;i++){
 
 
   row.append("g")
-//    .attr("transform", "translate(0," + 90 + ")")
     .call(d3.axisLeft(rowText))
     .selectAll("text")
-    //translate to push the names towards right and rotate the labels
+    //translate to push the names towards right and set angle 0
     .attr("transform", "translate(" +offset+",0)rotate(0)")
+    .style("font-size", 12)
     .style("text-anchor", "end") .on('mouseover', function(d) {
    
       hoverOnData = d.path[0].__data__;
-   
       hoverOnAttribute = globalRowChoice;
       displayDocs();
       
@@ -416,30 +373,24 @@ for(let i=0;i<gridData.length;i++){
 
 
   row.append("g")
-//    .attr("transform", "translate(0," + 90 + ")")
     .call(d3.axisTop(colText))
     .selectAll("text")
-    //translate to push the names towards right and rotate the labels
+    //translate to push the names towards right and rotate the labels 90
     .attr("transform", "translate(0,"+offset+")rotate(-90)")
+    .style("font-size", 12)
     .style("text-anchor", "start").on('mouseover', function(d) {
          hoverOnData = d.path[0].__data__;
-      
          hoverOnAttribute = globalColChoice;
          displayDocs();
-         
-            
       });
    }
 
 // reset to default when the reset button is clicked
 function resetState(){
-   makeGridData();
-	//drawGrid();
+   d3.selectAll("svg").remove();
 	}
 
-
    function start(){
-      //drawGrid(gridData);
       makeGridData();
    }
 
@@ -447,7 +398,7 @@ function resetState(){
 //////////////////////////////choice buttons//////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
   // Declare the color choice selector here (will be displayed on the right corner of the screen) 
-  var dataColumns = ["Location", "Phone", "Date", "Organization", "Person"];
+  var dataColumns = ["Select row", "Location", "Phone", "Date", "Organization", "Person"];
 
   const choiceRow = d3.select("#choiceRow")
     .selectAll("optionsRow")
@@ -457,6 +408,8 @@ function resetState(){
     .text(function (d) { return (d); })
     .attr("value", function (d) { return (d); })
     ;
+
+    var dataColumns = ["Select column", "Location", "Phone", "Date", "Organization", "Person"];
 
     const choiceCol = d3.select("#choiceCol")
     .selectAll("optionsCol")
@@ -469,26 +422,28 @@ function resetState(){
 
     d3.select("#choiceRow")
     .on("change", function (d) {
-      //  console.log("choiseeeeeeeeeeee");
       globalRowChoice = d3.select(this).property("value");
       console.log(globalRowChoice);
-      //d3.selectAll("svg").remove();
-     // renderScatterChart(data);
+
     });
     d3.select("#choiceCol")
     .on("change", function (d) {
       globalColChoice = d3.select(this).property("value");
       console.log(globalColChoice);
-
-     // d3.selectAll("svg").remove();
-     // renderScatterChart(data);
     });
 
 function makeChord(){
-    if(rowsSelected.length>2){
+    if((rowsSelected.length>2)&(rowsSelected.length<6)){
       makeRowData();
    }
-   if(colsSelected.length>2){
+   else{
+      alert("Unique rows selected should be between 2 to 5");
+   }
+   if((colsSelected.length>2)&(colsSelected.length<6)){
       makeColData();
+   }
+
+   else{
+      alert("Unique columns selected should be between 2 to 5");
    }
 }

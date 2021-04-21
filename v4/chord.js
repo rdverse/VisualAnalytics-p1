@@ -94,6 +94,7 @@ for(let i=0;i<data.length;i++){
       .attr("class","arc")
       .style("fill", function(d){ return(fill(d.source.index)) }) // colors depend on the source group. Change to target otherwise.
       .style("stroke", "black")
+      .style("opacity", 0.5)
           .attr("id",function(d,i){return "group"+i;});
 
 
@@ -103,7 +104,7 @@ for(let i=0;i<data.length;i++){
       .append("text")
       .attr("dx", 5)
       .attr("dy", 35)
-      .style("font-size", 10)
+      .style("font-size", 12)
       .attr("transform", d => `
       rotate(${((d.startAngle + d.endAngle) / 2 * 180 / Math.PI - 90)})
       translate(${200 + 5})
