@@ -1,23 +1,46 @@
+  
+  var globaldata;
   function drawChord(divName, data, specificData){
     d3.select(divName).selectAll("svg").remove();
+    globaldata = data;
+    console.log(divName);
+//console.log(specificData);
 
-console.log(specificData);
+//console.log(data);
 
-    // create a matrix
-  var matrix = [
-    [0,  5871, 8916, 2868],
-    [ 1951, 0, 2060, 6171],
-    [ 8010, 16145, 0, 8045],
-    [ 1013,   990,  940, 0]
-  ];
+var matrix = new Array();
 
-  var matrix = [[0,20,11],
-                [20,0,40],
-                [15,25,0]
-  ];
-  
-  
-  
+
+for(let i=0;i<specificData.length;i++){
+  matrix.push(new Array(specificData.length).fill(0));
+}
+
+
+for(let i=0;i<data.length;i++){
+//console.log(data[i]);      
+//   // data.push( new Array() );
+//    var j=0;
+   var indexRow='';
+    
+   for (const [key, value] of Object.entries(data[i])) {
+      if(key==0){
+         indexRow = value;
+       //  console.log(key,value);
+      }
+      
+      else{
+        //console.log(key,value);
+        var rind = specificData.indexOf(indexRow);
+        var cind =   specificData.indexOf(key);
+    
+        if((rind>-1)&(cind>-1)){
+          matrix[rind][cind] = value;
+        }
+   }  
+   
+    }
+}   
+
     // create the svg area
   var svg = d3.select(divName)
     .append("svg")
@@ -78,15 +101,15 @@ console.log(specificData);
       .data(res.groups)
       .enter()
       .append("text")
-      //.each(d => (d.angle = (d.startAngle + d.endAngle) / 2))
       .attr("dx", 5)
       .attr("dy", 35)
+      .style("font-size", 10)
       .attr("transform", d => `
       rotate(${((d.startAngle + d.endAngle) / 2 * 180 / Math.PI - 90)})
       translate(${200 + 5})
       ${(d.startAngle + d.endAngle) / 2 > Math.PI ? "rotate(180)" : ""}
     `)
       .attr("text-anchor", d => (d.startAngle + d.endAngle) / 2 > Math.PI ? "end" : null)
-      .text(d => "srv" + d.index);
+      .text(function(d,i){return(specificData[i])});
     }
 

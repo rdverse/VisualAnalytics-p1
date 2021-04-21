@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////
 /////////////////////Global variables to be used in most functions//////////////////
 ////////////////////////////////////////////////////////////////////////////////////
-var sqDim  = 25;
+var sqDim  = 30;
 var offset = 200;
 // attribute the mouse hovered over
 var hoverOnAttribute;
@@ -170,7 +170,7 @@ function makeColData(){
 
    var data = new Array();
 
-   var urlCol = 'https://raw.githubusercontent.com/ReDevVerse/carsData/main/matrix/' + globalRowChoice + globalRowChoice +'.csv';
+   var urlCol = 'https://raw.githubusercontent.com/ReDevVerse/carsData/main/matrix/' + globalColChoice + globalColChoice +'.csv';
    
     fetchText(urlCol).then((textData) => {
       const AllData = d3.csvParse(textData);   // Once the data is fetched, convert the strings to integer/float
@@ -286,7 +286,7 @@ var row = grid.selectAll("row")
 
    var color1 = d3.scaleLinear()
    .domain([d3.min(allValues), d3.max(allValues)])
-   .range(['#d73027', '#1a9850'])
+   .range(['white', 'blue'])
    .interpolate(d3.interpolateHcl);
 //console.log(d3.max(allValues));
 
@@ -335,8 +335,8 @@ var column = row.selectAll("square")
          if (icol > -1) {
              colsSelected.splice(icol, 1);
          }
-         makeRowData();
-         makeColData();
+         //makeRowData();
+         //makeColData();
       }
 
       else{
@@ -348,15 +348,20 @@ var column = row.selectAll("square")
          .style("fill","rgb(90,90,90)");
 
          gridData[dataPoint.i][dataPoint.j].clicked=true;
-         rowsSelected.push(dataPoint.indexRow);
-         colsSelected.push(dataPoint.indexCol);
-         if(rowsSelected.length>2){
-            makeRowData();
+
+      
+         var isRowIndex = rowsSelected.indexOf(dataPoint.indexRow);
+         var isColIndex = colsSelected.indexOf(dataPoint.indexCol);
+         
+         if(isRowIndex<0){
+            rowsSelected.push(dataPoint.indexRow);   
          }
-         if(colsSelected.length>2){
-            makeColData();
+         if(isColIndex<0){
+            colsSelected.push(dataPoint.indexCol);
          }
+         
         
+         
       }
          
    });
@@ -416,14 +421,14 @@ for(let i=0;i<gridData.length;i++){
     .selectAll("text")
     //translate to push the names towards right and rotate the labels
     .attr("transform", "translate(0,"+offset+")rotate(-90)")
-    .style("text-anchor", "start");
-
-    // At the end of the grid function draw the chord diagrams
-    //drawChord("#chordRow");
-    //drawChord("#chordCol");
-   makeRowData();
-    makeColData();
-
+    .style("text-anchor", "start").on('mouseover', function(d) {
+         hoverOnData = d.path[0].__data__;
+      
+         hoverOnAttribute = globalColChoice;
+         displayDocs();
+         
+            
+      });
    }
 
 // reset to default when the reset button is clicked
@@ -479,13 +484,11 @@ function resetState(){
      // renderScatterChart(data);
     });
 
-
-
-// var jsonTest;
-// console.log("fesfa");
-// d3.json('https://raw.githubusercontent.com/ReDevVerse/carsData/main/testJson.json', function(error,dat){
-// console.log(error);
-// console.log(dat);
-// console.log('sdf');
-// });
-// get initial data
+function makeChord(){
+    if(rowsSelected.length>2){
+      makeRowData();
+   }
+   if(colsSelected.length>2){
+      makeColData();
+   }
+}
