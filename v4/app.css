@@ -1,0 +1,62 @@
+
+
+#choices{
+  width: 100%;
+height: 10%; /* add this */
+}
+
+#availableDocs{
+width: 100%;
+height: 25%;
+float:left; /* add this */
+}
+
+#docViewer{
+  width: 100%;
+  height: 25%;
+  float:right; /* add this */
+  /* border: 2px solid#e08a46; */
+}
+
+ #grid{
+    width: 100%;
+    height: 100%;
+    float:left;
+     /* add this */
+    /* border: 2px solid#e08a46; */
+  }
+
+  
+
+
+
+
+  #chordRow{
+    width: 50%;
+    height: 50%;
+    float:left; 
+    font-weight: bold/* add this */
+    /* border: 2px solid#e08a46; */
+  }
+
+  #chordCol{
+    width: 50%;
+    height: 50%;
+    float:right; 
+    font-weight: bold/* add this */
+    /* border: 2px solid#e08a46; */
+  }
+
+/* 
+  #resetButton{
+    position : fixed    } */
+
+    
+     
+    
+
+  body {
+      margin: 10px;
+    overflow: scroll;
+      background-color: rgb(247, 237, 223);
+  }

@@ -296,7 +296,7 @@ function renderBarChart(data, divname) {
     .append("rect")
     .attr("x", x(0))
     .attr("y", function (d) { return y(d.Model); })
-    .attr("width", function (d) { return x(d[divname]); })
+    .attr("width", function (d) { return x(d[divname]);})
     .attr("height", y.bandwidth())
     // .attr("fill", function(d) {return(globalMyColor(d[divname]))});
     .attr("fill", function (d) { return (d.Model == "bmw 2002" ? "#d53e4f" : "#3288bd"); });
